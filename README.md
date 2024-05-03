@@ -7,6 +7,7 @@
 
 **Re:Draw - Context Aware Translation as a Controllable Method for Artistic Production**  
 [Joao Liborio Cardoso](https://www.jaliborc.com), [Francesco Banterle](http://www.banterle.com/francesco/), [Paolo Cignoni](https://vcg.isti.cnr.it/~cignoni/), [Michael Wimmer](https://www.cg.tuwien.ac.at/staff/MichaelWimmer)  
+In Proceedings of the 33rd International Joint Conference on Artificial Intelligence
 
 *We introduce context-aware translation, a novel method that combines the benefits of inpainting and image-to-image translation, respecting simultaneously the original input and contextual relevance -- where existing methods fall short. By doing so, our method opens new avenues for the controllable use of AI within artistic creation, from animation to digital art.*
 

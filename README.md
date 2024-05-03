@@ -17,5 +17,5 @@ In Proceedings of the 33rd International Joint Conference on Artificial Intellig
 If you use this code or dataset for your research, please cite our paper:
 
 ```bibtex
-Please wait for arXiv preprint (very soon).
+Please wait for IJCAI bibtext code (sometime until August the latest).
 ```

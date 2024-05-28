@@ -14,8 +14,13 @@ In Proceedings of the 33rd International Joint Conference on Artificial Intellig
 *As an use case, we apply our method to redraw any hand-drawn animated character eyes based on any design specifications -- eyes serve as a focal point that captures viewer attention and conveys a range of emotions, however, the labor-intensive nature of traditional animation often leads to compromises in the complexity and consistency of eye design. Furthermore, we remove the need for production data for training and introduce a new character recognition method that surpasses existing work by not requiring fine-tuning to specific productions. This proposed use case could help maintain consistency throughout production and unlock bolder and more detailed design choices without the production cost drawbacks. A user study shows context-aware translation is preferred over existing work 95.16% of the time.*
 
 ## Citation
-If you use this code or dataset for your research, please cite our paper:
+Please, do not forget to cite our work:
 
 ```bibtex
-Please wait for IJCAI bibtext code (sometime until August the latest).
+@misc{cardoso2024redraw,
+	title={Re:Draw -- Context Aware Translation as a Controllable Method for Artistic Production}, 
+	author={Jo\~ao Lib\'orio Cardoso and Francesco Banterle and Paolo Cignoni and Michael Wimmer},
+	year={2024}, eprint={2401.03499}, archivePrefix={arXiv},
+	primaryClass={cs.CV}
+}
 ```

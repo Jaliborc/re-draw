@@ -17,10 +17,18 @@ In Proceedings of the 33rd International Joint Conference on Artificial Intellig
 Please, do not forget to cite our work:
 
 ```bibtex
-@misc{cardoso2024redraw,
-	title={Re:Draw -- Context Aware Translation as a Controllable Method for Artistic Production}, 
-	author={Jo\~ao Lib\'orio Cardoso and Francesco Banterle and Paolo Cignoni and Michael Wimmer},
-	year={2024}, eprint={2401.03499}, archivePrefix={arXiv},
-	primaryClass={cs.CV}
+@inproceedings{ijcai2024p842,
+  title     = {Re:Draw - Context Aware Translation as a Controllable Method for Artistic Production},
+  author    = {Cardoso, João Libório and Banterle, Francesco and Cignoni, Paolo and Wimmer, Michael},
+  booktitle = {Proceedings of the Thirty-Third International Joint Conference on
+               Artificial Intelligence, {IJCAI-24}},
+  publisher = {International Joint Conferences on Artificial Intelligence Organization},
+  editor    = {Kate Larson},
+  pages     = {7609--7617},
+  year      = {2024},
+  month     = {8},
+  note      = {AI, Arts & Creativity},
+  doi       = {10.24963/ijcai.2024/842},
+  url       = {https://doi.org/10.24963/ijcai.2024/842},
 }
 ```

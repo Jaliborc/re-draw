@@ -1,252 +1,1100 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Re:Draw</title>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Re:Draw — Context Aware Translation</title>
+	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--red: #E03030;
+			--dark: #111111;
+			--mid: #555555;
+			--light: #f5f5f3;
+			--border: #ddd;
+			--white: #ffffff;
+			--max: 1030px;
+		}
 
-		<link rel="stylesheet" href="css/bootstrap.min.css"/>
-		<style>
-			h5 {
-				margin-top: 12px;
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		html { scroll-behavior: smooth; }
+
+		body {
+			background: var(--light);
+			color: var(--dark);
+			font-family: 'DM Sans', sans-serif;
+			font-size: 16px;
+			line-height: 1.7;
+		}
+
+		/* ── UTILITIES ── */
+		.label {
+			font-size: 10px;
+			font-weight: 700;
+			letter-spacing: 4px;
+			text-transform: uppercase;
+			color: var(--red);
+			margin-bottom: 10px;
+		}
+
+		.visible { display: flex; }
+		.hidden { display: none; }
+
+		/* ── HEADER ── */
+		header {
+			position: sticky;
+			top: 0;
+			z-index: 100;
+			background: var(--white);
+			border-bottom: 1.5px solid var(--dark);
+			padding: 0 24px;
+			height: 52px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+
+			.title {
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: clamp(13px, 4.5vw, 22px);
+				letter-spacing: 1.5px;
+				color: var(--dark);
+				white-space: nowrap;
+				text-decoration: none;
+
+				span { color: var(--red); }
+			}
+
+			.badge {
+				font-size: clamp(8px, 2.2vw, 11px);
+				font-weight: 700;
+				letter-spacing: clamp(0px, 0.5vw, 2px);
+				text-transform: uppercase;
+				color: var(--red);
+				border: 1.5px solid var(--red);
+				padding: clamp(3px, 0.8vw, 4px) clamp(6px, 2vw, 10px);
+				border-radius: 2px;
+				white-space: nowrap;
+				text-decoration: none;
+				cursor: pointer;
+				transition: background 0.15s, color 0.15s;
+
+				&:hover, &:active {
+					background: var(--red);
+					color: #fff;
+				}
+			}
+		}
+
+		/* ── HERO ── */
+		.hero {
+			background: var(--white);
+			border-bottom: 1.5px solid var(--dark);
+			padding: 64px 24px 52px;
+			text-align: center;
+
+			.eyebrow {
+				font-size: 11px;
+				font-weight: 700;
+				letter-spacing: 4px;
+				text-transform: uppercase;
+				color: var(--mid);
+				margin-bottom: 14px;
+			}
+
+			h1 {
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: clamp(52px, 10vw, 96px);
+				line-height: 0.95;
+				letter-spacing: 2px;
+				margin-bottom: 6px;
+
+				span { color: var(--red); }
+			}
+
+			.subtitle {
+				font-family: 'Lora', serif;
 				font-style: italic;
+				font-size: clamp(13px, 2vw, 16px);
+				color: var(--mid);
+				max-width: 600px;
+				margin: 16px auto 32px;
+				line-height: 1.6;
 			}
 
-			.imgs span {
-				position: relative;
-				display: inline-block;
-				vertical-align: top;
+			.authors {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 28px;
+				margin-top: 28px;
+				padding-top: 24px;
+				border-top: 1px solid var(--border);
+
+				.author {
+					text-align: center;
+
+					a {
+						font-size: 14px;
+						font-weight: 700;
+						color: var(--dark);
+						text-decoration: none;
+						border-bottom: 1.5px solid var(--red);
+					}
+
+					small {
+						display: block;
+						font-size: 12px;
+						color: var(--mid);
+						margin-top: 3px;
+						letter-spacing: 0.5px;
+					}
+				}
+			}
+		}
+
+		/* ── TEASER ── */
+		aside.teaser {
+			background: #1a1a1a;
+			position: relative;
+
+			.scroll {
+				display: flex;
+				flex-wrap: nowrap;
+				justify-content: center;
+				gap: 3px;
+				padding: 3px;
+				overflow-x: auto;
+				scroll-behavior: smooth;
+				scrollbar-width: none;
+
+				&::-webkit-scrollbar { display: none; }
+				&.is-overflow { justify-content: flex-start; }
+
+				.pair {
+					display: grid;
+					grid-template-columns: 1fr 1fr;
+					gap: 2px;
+					flex: 0 0 auto;
+
+					.tagged-img {
+						width: 120px;
+
+						img {
+							width: 120px;
+							display: block;
+							object-fit: contain;
+							background: #111;
+							border-radius: 0;
+						}
+					}
+				}
 			}
 
-			.imgs img {
-				display: block; 
-				width:120px;
-			}
-
-			.imgs span[label]:not([label=""])::after {
-				background: hsla(0,0%,100%,.75);
-				border-radius: .125rem;
-				content: attr(label);
-				line-height: 1;
-				padding: .5rem;
+			button {
 				position: absolute;
-				bottom: 1.5rem;
-				left: 1.5rem;
+				top: 50%;
+				transform: translateY(-50%);
+				background: rgba(17,17,17,0.75);
+				border: 1px solid rgba(255,255,255,0.15);
+				color: #fff;
+				width: 36px;
+				height: 36px;
+				border-radius: 2px;
+				cursor: pointer;
+				font-size: 16px;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				z-index: 10;
+				transition: background 0.15s;
+				line-height: 1;
+
+				&.visible { display: flex; }
+				&:hover { background: rgba(224,48,48,0.85); }
+				&.prev { left: 8px; }
+				&.next { right: 8px; }
 			}
-		</style>
+		}
 
-		<!--[if lt IE 9]>
-			<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-		<![endif]-->
-	</head>
-	<body>
-		<main>
-				<div class="container" style="max-width: 1030px;">
-					<div class="row">
-						<div class="col">
-							<h2 class="text-center">Re:Draw - Context Aware Translation as a Controllable Method for Artistic Production</h2>
-							<h5 class="text-center">
-								In Proceedings of the 33rd International Joint Conference on Artificial Intelligence
-							</h5>
+		/* ── MAIN CONTENT ── */
+		main {
+			max-width: var(--max);
+			margin: 0 auto;
+			padding: 56px 24px 40px;
+		}
 
-							<div class="col-xs-2"></div>
-							<div class="col-xs-2 text-center">
-								<a href="http://www.jaliborc.com">João Libório Cardoso</a>
-								<p>TU Wien</p>
-							</div>
-							<div class="col-xs-2 text-center">
-									<a href="http://www.banterle.com/francesco/">Francesco Banterle</a>
-									<p>CNR-ISTI</p>
-							</div>
-							<div class="col-xs-2 text-center">
-									<a href="https://vcg.isti.cnr.it/~cignoni/">Paolo Cignoni</a>
-									<p>CNR-ISTI</p>
-							</div>
-							<div class="col-xs-2 text-center">
-									<a href="https://www.cg.tuwien.ac.at/staff/MichaelWimmer">Michael Wimmer</a>
-									<p>TU Wien</p>
-							</div>
-						</div>
-					</div>
+		/* ── SECTIONS ── */
+		main > section {
+			margin-bottom: 56px;
 
-					<div class="row">
-						<div class="col-md-12">
-							<div class="imgs text-nowrap table-responsive text-center">
-								<span label="Original"><img src="images/teaser/A.webp"/></span>
-								<span label="Redrawn"><img src="images/teaser/B.webp"/></span>&nbsp;
-								<span label="Original"><img src="images/teaser/C.webp"/></span>
-								<span label="Redrawn"><img src="images/teaser/D.webp"/></span>&nbsp;
-								<span label="Original"><img src="images/teaser/E.webp"/></span>
-								<span label="Redrawn"><img src="images/teaser/F.webp"/></span>&nbsp;
-								<span label="Original"><img src="images/teaser/G.webp"/></span>
-								<span label="Redrawn"><img src="images/teaser/H.webp"/></span>
-						</div>
+			& + section { margin-top: 0; }
 
-							<h3 class="text-center">Abstract</h3>
-							<p>
-								We introduce context-aware translation, a novel method that combines the benefits of inpainting and image-to-image translation, respecting simultaneously the original input and contextual relevance -- where existing methods fall short. By doing so, our method opens new avenues for the controllable use of AI within artistic creation, from animation to digital art.
-							</p>
-							<p>
-								As an use case, we apply our method to redraw any hand-drawn animated character eyes based on any design specifications -- eyes serve as a focal point that captures viewer attention and conveys a range of emotions, however, the labor-intensive nature of traditional animation often leads to compromises in the complexity and consistency of eye design. Furthermore, we remove the need for production data for training and introduce a new character recognition method that surpasses existing work by not requiring fine-tuning to specific productions. This proposed use case could help maintain consistency throughout production and unlock bolder and more detailed design choices without the production cost drawbacks. A user study shows context-aware translation is preferred over existing work 95.16% of the time.
-							</p>
-						</div>
-					</div>
+			h2 {
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: 38px;
+				letter-spacing: 1px;
+				color: var(--dark);
+				margin-bottom: 18px;
+				border-bottom: 2px solid var(--dark);
+				padding-bottom: 10px;
+			}
 
-					<div class="row">
-						<div class="col-md-2">
-								<h3>Paper</h3>
-								<p>
-									<a href="paper.pdf"><img src="images/paper.jpg" alt="Paper" class="img-thumbnail" style="height: 175px;"/></a>
-								</p>
-						</div>
-						<div class="col-md-10">
-								<h3>BibTeX</h3>
-								<p>Please, do not forget to cite our work:</p>
-								<pre><code class="language-latex">@inproceedings{ijcai2024p842,
+			p {
+				font-size: 15.5px;
+				color: #333;
+				margin-bottom: 14px;
+
+				a {
+					color: var(--red);
+					border-bottom: 1px solid var(--red);
+					text-decoration: none;
+				}
+			}
+		}
+
+		/* ── PAPER ── */
+		.paper-link {
+			display: inline-block;
+			border: 1px solid var(--border);
+			border-radius: 4px;
+			overflow: hidden;
+			transition: border-color 0.15s;
+			flex-shrink: 0;
+			align-self: flex-start;
+
+			&:hover { border-color: var(--red); }
+
+			img {
+				display: block;
+				width: 200px;
+			}
+		}
+
+		.paper-bibtex {
+			display: grid;
+			grid-template-columns: auto 1fr auto;
+			gap: 16px;
+			align-items: start;
+			margin-top: 18px;
+		}
+
+		.paper-socials {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			align-items: center;
+
+			a {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 5px;
+				text-decoration: none;
+				color: var(--mid);
+				transition: color 0.15s;
+				width: 52px;
+
+				&:hover { color: var(--dark); }
+
+				svg {
+					width: 32px;
+					height: 32px;
+					display: block;
+				}
+
+				span {
+					font-size: 9px;
+					font-weight: 700;
+					letter-spacing: 1.5px;
+					text-transform: uppercase;
+				}
+			}
+		}
+
+		/* ── BIBTEX BOX ── */
+		.bibtex-box {
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 4px;
+			padding: 20px 24px;
+			cursor: pointer;
+			position: relative;
+			overflow: hidden;
+			transition: border-color 0.15s;
+
+			&:hover {
+				border-color: var(--red);
+
+				.hint { color: var(--dark); }
+			}
+
+			&.copied .flash { opacity: 1; }
+
+			pre {
+				background: transparent;
+				color: var(--dark);
+				padding: 0;
+				margin: 0;
+				font-family: 'DM Mono', 'Courier New', monospace;
+				font-size: 13px;
+				line-height: 1.7;
+				overflow: hidden;
+				white-space: pre;
+				-webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+				mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+			}
+
+			.hint {
+				position: absolute;
+				bottom: 10px;
+				right: 12px;
+				font-size: 10px;
+				font-weight: 700;
+				letter-spacing: 1.5px;
+				text-transform: uppercase;
+				color: var(--mid);
+				pointer-events: none;
+				transition: opacity 0.2s;
+			}
+
+			.flash {
+				position: absolute;
+				inset: 0;
+				background: var(--dark);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 12px;
+				font-weight: 700;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+				color: #fff;
+				opacity: 0;
+				pointer-events: none;
+				transition: opacity 0.15s;
+			}
+		}
+
+		/* ── VIDEO ── */
+		.video-wrap {
+			position: relative;
+			width: 100%;
+			aspect-ratio: 16 / 9;
+			background: var(--dark);
+			border-radius: 4px;
+			overflow: hidden;
+			margin-top: 8px;
+
+			iframe {
+				position: absolute;
+				inset: 0;
+				width: 100%;
+				height: 100%;
+				border: none;
+			}
+		}
+
+		/* ── TAGGED IMAGES ── */
+		.tagged-img {
+			position: relative;
+			display: block;
+			line-height: 0;
+			background: #f0f0ee;
+
+			img {
+				width: 100%;
+				display: block;
+				object-fit: contain;
+				border-radius: 4px;
+			}
+
+			figcaption {
+				position: absolute;
+				bottom: 6px;
+				left: 6px;
+				font-family: 'DM Sans', sans-serif;
+				font-size: 10px;
+				font-weight: 700;
+				letter-spacing: 1.5px;
+				text-transform: uppercase;
+				line-height: 1;
+				padding: 4px 7px;
+				border-radius: 2px;
+				pointer-events: none;
+				color: #fff;
+			}
+
+			&.dark figcaption { background: rgba(17,17,17,0.75); }
+			&.red figcaption  { background: rgba(224,48,48,0.85); }
+			&.faded figcaption  { background: rgba(17,17,17,0.55); }
+		}
+
+		/* ── IMAGE PAIRS ── */
+		.pair {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 3px;
+			margin-bottom: 3px;
+		}
+
+		.pairs-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			margin: 20px 0;
+
+			.pair {
+				flex: 1 1 calc(50% - 6px);
+				margin-bottom: 0;
+				min-width: 200px;
+			}
+		}
+
+		.pairs-row-4 {
+			display: grid;
+			grid-template-columns: repeat(4, 240px);
+			gap: 8px;
+			margin: 20px 0;
+			width: fit-content;
+			margin-left: auto;
+			margin-right: auto;
+
+			.pair {
+				width: 100%;
+				max-width: 240px;
+
+				.tagged-img img {
+					width: 100%;
+					display: block;
+					object-fit: contain;
+					background: #f0f0ee;
+					border-radius: 4px;
+				}
+			}
+		}
+
+		.sequence {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+			gap: 3px;
+			margin: 16px 0;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		/* ── ACKNOWLEDGEMENTS ── */
+		aside.ack {
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 4px;
+			padding: 28px 32px;
+			font-size: 14px;
+			color: #444;
+			line-height: 1.75;
+
+			p + p { margin-top: 12px; }
+
+			.note {
+				font-size: 13px;
+				color: var(--mid);
+			}
+
+			a {
+				color: var(--red);
+				text-decoration: none;
+				border-bottom: 1px solid var(--red);
+			}
+		}
+
+		/* ── CARD STACKS ── */
+		.card-stacks-grid {
+			display: grid;
+			grid-template-columns: repeat(6, minmax(0, 149px));
+			column-gap: 16px;
+			row-gap: 16px;
+			margin: 20px 0;
+			width: fit-content;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.card-stack {
+			cursor: pointer;
+			position: relative;
+
+			.inner {
+				position: relative;
+				padding-bottom: 8px;
+			}
+
+			.ghost {
+				position: absolute;
+				inset: 0;
+				border-radius: 4px;
+				overflow: hidden;
+				transition: transform 0.25s ease;
+
+				img {
+					width: 100%;
+					height: 100%;
+					display: block;
+					object-fit: cover;
+				}
+
+				&:nth-child(1) { transform: rotate(3deg) translate(4px, 4px); z-index: 1; opacity: 0.75; }
+				&:nth-child(2) { transform: rotate(-2deg) translate(-3px, 6px); z-index: 0; opacity: 0.5; }
+			}
+
+			.front {
+				position: relative;
+				z-index: 2;
+				border-radius: 4px;
+				overflow: hidden;
+				transition: border-color 0.15s, transform 0.15s;
+				background: #f0f0ee;
+
+				img {
+					width: 100%;
+					display: block;
+					object-fit: contain;
+					background: #f0f0ee;
+				}
+			}
+
+			.count {
+				position: absolute;
+				top: 6px;
+				right: 6px;
+				background: rgba(17,17,17,0.72);
+				color: #fff;
+				font-size: 10px;
+				font-weight: 700;
+				letter-spacing: 1px;
+				padding: 3px 7px;
+				border-radius: 2px;
+				z-index: 4;
+				pointer-events: none;
+				transition: background 0.15s;
+			}
+
+			.label {
+				font-size: 10px;
+				font-weight: 700;
+				letter-spacing: 1px;
+				color: var(--mid);
+				text-transform: uppercase;
+				margin-top: 10px;
+				text-align: center;
+				margin-bottom: 0;
+			}
+
+			&:hover {
+				.ghost:nth-child(1) { transform: rotate(6deg) translate(8px, 8px); }
+				.ghost:nth-child(2) { transform: rotate(-4.5deg) translate(-7px, 10px); }
+				.front { border: 1px solid var(--red); transform: scale(1.02); }
+				.count { background: rgba(224,48,48,0.9); }
+			}
+		}
+
+		/* ── LIGHTBOX ── */
+		.overlay {
+			display: none;
+			position: fixed;
+			inset: 0;
+			background: rgba(10,10,10,0.82);
+			z-index: 1000;
+			align-items: center;
+			justify-content: center;
+			padding: 40px 24px;
+
+			&.visible { display: flex; }
+
+			.lightbox {
+				background: var(--white);
+				border-radius: 6px;
+				padding: 24px;
+				max-width: 675px;
+				width: 100%;
+				max-height: 90vh;
+				overflow-y: auto;
+				position: relative;
+				animation: popup 0.22s ease;
+
+				h3 {
+					font-family: 'Bebas Neue', sans-serif;
+					font-size: 22px;
+					letter-spacing: 1px;
+					margin-bottom: 16px;
+					color: var(--dark);
+
+					span { color: var(--red); }
+				}
+
+				.grid {
+					display: grid;
+					grid-template-columns: repeat(auto-fill, minmax(120px, 120px));
+					gap: 6px;
+					justify-content: center;
+
+					.tagged-img img {
+						width: 100%;
+						display: block;
+						object-fit: contain;
+						background: #f0f0ee;
+						border-radius: 3px;
+					}
+				}
+
+				button {
+					position: absolute;
+					top: 12px;
+					right: 14px;
+					background: none;
+					border: none;
+					font-size: 20px;
+					cursor: pointer;
+					color: var(--mid);
+					line-height: 1;
+					padding: 4px;
+
+					&:hover { color: var(--red); }
+				}
+			}
+		}
+
+		@keyframes popup {
+			from { opacity: 0; transform: scale(0.94); }
+			to   { opacity: 1; transform: scale(1); }
+		}
+
+		/* ── FOOTER ── */
+		footer {
+			background: #1a1a1a;
+			padding: 24px;
+			text-align: center;
+			font-size: 12px;
+			color: #666;
+			letter-spacing: 1px;
+		}
+
+		/* ── MEDIA QUERIES ── */
+		@media (max-width: 1025px) {
+			.pairs-row-4 { grid-template-columns: repeat(2, 1fr); }
+		}
+
+		@media (max-width: 900px) {
+			.card-stacks-grid { grid-template-columns: repeat(3, minmax(0, 149px)); }
+		}
+
+		@media (max-width: 700px) {
+			.sequence {
+				grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+				> *:last-child { display: none; }
+			}
+		}
+
+		@media (max-width: 600px) {
+			.pairs-row .pair { flex: 1 1 100%; }
+			.paper-bibtex { display: flex; flex-direction: column; align-items: center; }
+			.paper-bibtex .bibtex-box { width: 100%; }
+			.paper-socials { flex-direction: row; justify-content: center; }
+			h2 { font-size: 30px; }
+			aside.ack { padding: 20px; }
+			.hero .authors { gap: 18px; }
+		}
+
+		@media (max-width: 550px) {
+			.card-stacks-grid { grid-template-columns: repeat(2, minmax(0, 149px)); }
+		}
+	</style>
+</head>
+<body>
+
+<header>
+	<a class="title" href="#">Re<span>:</span>Draw</a>
+	<a class="badge" href="https://ijcai.org/proceedings/2024/" target="_blank" rel="noopener">IJCAI 2024</a>
+</header>
+
+<section class="hero">
+	<p class="eyebrow">In Proceedings of the 33rd International Joint Conference on Artificial Intelligence</p>
+	<h1>Re<span>:</span>Draw</h1>
+	<p class="subtitle">Context Aware Translation as a Controllable Method for Artistic Production</p>
+	<div class="authors">
+		<div class="author">
+			<a href="http://www.jaliborc.com">João Libório Cardoso</a>
+			<small>TU Wien</small>
+		</div>
+		<div class="author">
+			<a href="http://www.banterle.com/francesco/">Francesco Banterle</a>
+			<small>CNR-ISTI</small>
+		</div>
+		<div class="author">
+			<a href="https://vcg.isti.cnr.it/~cignoni/">Paolo Cignoni</a>
+			<small>CNR-ISTI</small>
+		</div>
+		<div class="author">
+			<a href="https://www.cg.tuwien.ac.at/staff/MichaelWimmer">Michael Wimmer</a>
+			<small>TU Wien</small>
+		</div>
+	</div>
+</section>
+
+<aside class="teaser">
+	<button class="prev" onclick="document.querySelector('aside.teaser .scroll').scrollBy({left:-260,behavior:'smooth'})">&#8592;</button>
+	<div class="scroll">
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/teaser/A.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/teaser/B.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/teaser/C.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/teaser/D.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/teaser/E.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/teaser/F.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/teaser/G.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/teaser/H.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+	</div>
+	<button class="next" onclick="document.querySelector('aside.teaser .scroll').scrollBy({left:260,behavior:'smooth'})">&#8594;</button>
+</aside>
+
+<main>
+	<section>
+		<p class="label">Overview</p>
+		<h2>Abstract</h2>
+		<p>We introduce context-aware translation, a novel method that combines the benefits of inpainting and image-to-image translation, respecting simultaneously the original input and contextual relevance — where existing methods fall short. By doing so, our method opens new avenues for the controllable use of AI within artistic creation, from animation to digital art.</p>
+		<p>As a use case, we apply our method to redraw any hand-drawn animated character eyes based on any design specifications. Eyes serve as a focal point that captures viewer attention and conveys a range of emotions; however, the labor-intensive nature of traditional animation often leads to compromises in the complexity and consistency of eye design. Furthermore, we remove the need for production data for training and introduce a new character recognition method that surpasses existing work by not requiring fine-tuning to specific productions.</p>
+		<p>This proposed use case could help maintain consistency throughout production and unlock bolder and more detailed design choices without the production cost drawbacks. A user study shows context-aware translation is preferred over existing work <strong>95.16%</strong> of the time.</p>
+	</section>
+
+	<section>
+		<p class="label">Overview</p>
+		<h2>Paper Resources</h2>
+		<div class="paper-bibtex">
+			<a class="paper-link" href="https://jaliborc.github.io/re-draw/paper.pdf" title="Author Version">
+				<img src="https://jaliborc.github.io/re-draw/images/paper.webp" alt="Paper thumbnail">
+			</a>
+			<div class="bibtex-box" id="bibtex-box" onclick="copyBibtex()" title="Click to copy BibTeX">
+				<pre id="bibtex-pre">@inproceedings{ijcai2024p842,
   title     = {Re:Draw - Context Aware Translation as a Controllable Method for Artistic Production},
   author    = {Cardoso, João Libório and Banterle, Francesco and Cignoni, Paolo and Wimmer, Michael},
-  booktitle = {Proceedings of the Thirty-Third International Joint Conference on Artificial Intelligence, {IJCAI-24}},
-  url       = {https://doi.org/10.24963/ijcai.2024/842}}</code></pre>
-						</div>
-				</div>
-
-				<div class="row">
-					<div class="col-md-6">
-						<h3>Explainer Video</h3>
-						<p>
-							<iframe width="100%" height="274" src="https://www.youtube.com/embed/8YeDvrdvA5A" title="Explainer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-						</p>
-					</div>
-					<div class="col-md-6">
-						<h3>Stress Test</h3>
-						<p>
-							<iframe width="100%" height="274" src="https://www.youtube.com/embed/YO8Fb2cpSRQ" title="Stress Test" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-						</p>
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col-md-12">
-						<h3>Additional Media</h3>
-						<p>Our method can be used to increase the amount of detail in character's eyes. Note that a higher amount of detail doesn't necessarily translate to better or more appealing artwork. Simplified designs are sometimes used as a stylistic choice. But they may also occur due to technical constraints. Our method opens the option to have higher detail if so desired, without increasing production time.</p><p>We present examples from a diverse set of anime series, including <a href="https://maidragon.jp/">Kobayashi's Dragon Maid</a>, <a href="https://mahoyome.jp/">The Ancient Magus Bride</a>, <a href="https://www.sunrise-inc.co.jp/idolmaster/">Idolmaster: Xenoglossia</a>, <a href="https://dr-stone.jp/">Dr.Stone</a>, <a href="https://juiz.jp/">Eden of the East</a>, <a href="https://darli-fra.jp/">Darling in the Franxx</a> and <a href="https://wotakoi-anime.com/">Wotakoi</a>:</p>
-						
-						<p><div class="imgs text-nowrap table-responsive text-center">
-							<span label="Original"><img src="images/results/G.webp"/></span>
-							<span label="Redrawn"><img src="images/results/H.webp"/></span>&nbsp;
-							<span label="Original"><img src="images/results/I.webp"/></span>
-							<span label="Redrawn"><img src="images/results/J.webp"/></span>&nbsp;
-							<span label="Original"><img src="images/results/M.webp"/></span>
-							<span label="Redrawn"><img src="images/results/N.webp"/></span>&nbsp;
-							<span label="Original"><img src="images/results/E.webp"/></span>
-							<span label="Redrawn"><img src="images/results/F.webp"/></span>
-						</div>
-						<div class="imgs text-nowrap table-responsive text-center">
-							<span label="Original"><img src="images/results/O.webp"/></span>
-							<span label="Redrawn"><img src="images/results/P.webp"/></span>&nbsp;
-							<span label="Original"><img src="images/results/K.webp"/></span>
-							<span label="Redrawn"><img src="images/results/L.webp"/></span>&nbsp;
-							<span label="Original"><img src="images/results/C.webp"/></span>
-							<span label="Redrawn"><img src="images/results/D.webp"/></span>&nbsp;
-							<span label="Original"><img src="images/results/A.webp"/></span>
-							<span label="Redrawn"><img src="images/results/B.webp"/></span>
-						</div>
-						&nbsp;
-						<p>A side-effect of how our proposed networks are trained is that our method is also capable of applying entirely different designs to characters. While not the focus of our work, it demonstrates the generalizability of our method and the robustness of the learned models:</p>
-						<div class="imgs text-nowrap table-responsive text-center">
-							<span label="Original"><img src="images/results/Q.webp"/></span>
-							<span><img src="images/results/Q1.webp"/></span>
-							<span><img src="images/results/Q2.webp"/></span>
-							<span><img src="images/results/Q3.webp"/></span>
-							<span><img src="images/results/Q4.webp"/></span>
-							<span><img src="images/results/Q5.webp"/></span>
-						</div>
-						&nbsp;
-						<p>In these examples featuring <a href="https://maidragon.jp/">Kobayashi's Dragon Maid</a>, <a href="https://mahoyome.jp/">The Ancient Magus Bride</a>, <a href="http://www.jcstaff.co.jp/sakuhin/nenpyo/2018/06_satsuriku/satsuriku.htm">Angels of Death</a>, <a href="http://re-zero-anime.jp/">Re:Zero</a> and <a href="https://dr-stone.jp/">Dr.Stone</a>, we demonstrate that our method is robust enough to handle characters in a variety of challenging scenarios. This includes dealing with atypical facial proportions, high-resolution imagery, oblique camera angles, head tilts, irregular lighting conditions, and occlusions caused by hair:</p>
-						<div class="imgs text-nowrap table-responsive text-center">
-							<span label="Original"><img src="images/results/G.webp"/></span>
-							<span><img src="images/results/H1.webp"/></span>
-							<span><img src="images/results/H2.webp"/></span>
-							<span><img src="images/results/H3.webp"/></span>
-							<span><img src="images/results/H4.webp"/></span>
-							<span><img src="images/results/H5.webp"/></span>
-							<span><img src="images/results/H6.webp"/></span>
-							<span><img src="images/results/H7.webp"/></span>
-						</div>
-						<div class="imgs text-nowrap table-responsive text-center">
-							<span label="Original"><img src="images/results/I.webp"/></span>
-							<span><img src="images/results/J1.webp"/></span>
-							<span><img src="images/results/J2.webp"/></span>
-							<span><img src="images/results/J3.webp"/></span>
-							<span><img src="images/results/J4.webp"/></span>
-							<span><img src="images/results/J5.webp"/></span>
-							<span><img src="images/results/J6.webp"/></span>
-							<span><img src="images/results/J7.webp"/></span>
-						</div>
-						<div class="imgs text-nowrap table-responsive text-center">
-							<span label="Original"><img src="images/results/R.webp"/></span>
-							<span><img src="images/results/R1.webp"/></span>
-							<span><img src="images/results/R2.webp"/></span>
-							<span><img src="images/results/R4.webp"/></span>
-							<span><img src="images/results/R5.webp"/></span>
-							<span><img src="images/results/R6.webp"/></span>
-							<span><img src="images/results/R7.webp"/></span>
-							<span><img src="images/results/R8.webp"/></span>
-							<span><img src="images/results/R9.webp"/></span>
-							<span><img src="images/results/R10.webp"/></span>
-							<span><img src="images/results/R3.webp"/></span>
-						</div>
-						<div class="imgs text-nowrap table-responsive text-center">
-							<span label="Original"><img src="images/results/S.webp"/></span>
-							<span><img src="images/results/S1.webp"/></span>
-							<span><img src="images/results/S2.webp"/></span>
-							<span><img src="images/results/S3.webp"/></span>
-							<span><img src="images/results/S4.webp"/></span>
-							<span><img src="images/results/S5.webp"/></span>
-							<span><img src="images/results/S6.webp"/></span>
-							<span><img src="images/results/S7.webp"/></span>
-						</div>
-						<div class="imgs text-nowrap table-responsive text-center">
-							<span label="Original"><img src="images/results/T.webp"/></span>
-							<span><img src="images/results/T1.webp"/></span>
-							<span><img src="images/results/T2.webp"/></span>
-							<span><img src="images/results/T3.webp"/></span>
-							<span><img src="images/results/T4.webp"/></span>
-							<span><img src="images/results/T5.webp"/></span>
-							<span><img src="images/results/T6.webp"/></span>
-							<span><img src="images/results/T7.webp"/></span>
-						</div>
-						<div class="imgs text-nowrap table-responsive text-center">
-							<span label="Original"><img src="images/results/E.webp"/></span>
-							<span><img src="images/results/F1.webp"/></span>
-							<span><img src="images/results/F2.webp"/></span>
-							<span><img src="images/results/F3.webp"/></span>
-							<span><img src="images/results/F4.webp"/></span>
-							<span><img src="images/results/F5.webp"/></span>
-							<span><img src="images/results/F6.webp"/></span>
-							<span><img src="images/results/F7.webp"/></span>
-							<span><img src="images/results/F8.webp"/></span>
-						</div>
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col-md-12">
-						<h3>Acknowledgements</h3>
-						<p>We would like to especially thank Jarret Martin for teaching us about the animation pipeline needs, his continuous feedback throughout the course of our research and help running the industry survey. We would also like to thank <a href="https://www.tonarianimation.com/">Tonari Animation</a> and <a href="https://otakuvs.com/">OtakuVS</a>  for offering us the production data and other elements from their works Otachan and Second Self for illustration of the research, which we did whenever possible.</p>
-
-						<p>Finally, we'd like to thank some of the first author's students for their contributions during the early stages of this project, in particular Yanic Thurner, Felix Kugler, and especially Dominik Hanko, who worked more closely with this topic.</p>
-
-						<p>All copyrighted content belongs to its original owners. Characters, music, and all other forms of creative content are owned by their original creators, and we make no claim to them. This content was made in compliance with Fair Use law for the purpose of illustration of non-profit scientific research.</p>
-					</div>
-				</div>
-
-				<div class="row"><div class="col">&nbsp;</div></div>
+  booktitle = {Proceedings of the Thirty-Third International Joint Conference on
+               Artificial Intelligence, {IJCAI-24}},
+  publisher = {International Joint Conferences on Artificial Intelligence Organization},
+  editor    = {Kate Larson},
+  pages     = {7609--7617},
+  year      = {2024},
+  month     = {8},</pre>
+				<span class="hint">Click to copy</span>
+				<div class="flash">&#10003; Copied!</div>
 			</div>
-		</main>
+			<div class="paper-socials">
+				<a href="https://github.com/jaliborc/re-draw" target="_blank" rel="noopener" title="GitHub">
+					<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+						<path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.418-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23A11.52 11.52 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.29-1.552 3.297-1.23 3.297-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/>
+					</svg>
+					<span>GitHub</span>
+				</a>
+				<a href="https://arxiv.org/abs/2401.03499" target="_blank" rel="noopener" title="arXiv">
+					<svg viewBox="85 -2 90 114" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="width:32px;height:32px">
+						<g transform="translate(-358.165 -223.27)">
+							<path d="M492.976,269.5l24.36-29.89c1.492-1.989,2.2-3.03,1.492-4.723a5.142,5.142,0,0,0-4.481-3.161h0a4.024,4.024,0,0,0-3.008,1.108L485.2,261.094Z"/>
+							<path d="M526.273,325.341,493.91,287.058l-.972,1.033-7.789-9.214-7.743-9.357-4.695,5.076a4.769,4.769,0,0,0,.015,6.53L520.512,332.2a3.913,3.913,0,0,0,3.137,1.192,4.394,4.394,0,0,0,4.027-2.818C528.4,328.844,527.6,327.133,526.273,325.341Z"/>
+							<path d="M479.215,288.087l6.052,6.485L458.714,322.7a2.98,2.98,0,0,1-2.275,1.194,3.449,3.449,0,0,1-3.241-2.144c-.513-1.231.166-3.15,1.122-4.168l.023-.024.021-.026,24.851-29.448m-.047-1.882-25.76,30.524c-1.286,1.372-2.084,3.777-1.365,5.5a4.705,4.705,0,0,0,4.4,2.914,4.191,4.191,0,0,0,3.161-1.563l27.382-29.007-7.814-8.372Z"/>
+							<path d="M448.538,224.52h.077c1,.024,2.236,1.245,2.589,1.669l.023.028.024.026,46.664,50.433a3.173,3.173,0,0,1-.034,4.336l-4.893,5.2-6.876-8.134L446.652,230.4c-1.508-2.166-1.617-2.836-1.191-3.858a3.353,3.353,0,0,1,3.077-2.02m0-1.25a4.606,4.606,0,0,0-4.231,2.789c-.705,1.692-.2,2.88,1.349,5.1l39.493,47.722,7.789,9.214,5.853-6.221a4.417,4.417,0,0,0,.042-6.042L452.169,225.4s-1.713-2.08-3.524-2.124Z"/>
+						</g>
+					</svg>
+					<span>arXiv</span>
+				</a>
+			</div>
+		</div>
+	</section>
 
-		<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
-		<script src="js/bootstrap.min.js"></script>
-	</body>
+	<section>
+		<p class="label">Media</p>
+		<h2>Explainer Video</h2>
+		<div class="video-wrap">
+			<iframe src="https://www.youtube.com/embed/?listType=search&list=Re:Draw+context+aware+translation+IJCAI" allowfullscreen title="Explainer video"></iframe>
+		</div>
+	</section>
+
+	<section>
+		<p class="label">Media</p>
+		<h2>Stress Test</h2>
+		<div class="video-wrap">
+			<iframe src="https://www.youtube.com/embed/?listType=search&list=Re:Draw+stress+test+IJCAI" allowfullscreen title="Stress test video"></iframe>
+		</div>
+	</section>
+
+	<section>
+		<p class="label">Media</p>
+		<h2>Results Sample</h2>
+		<p>Our method can be used to increase the amount of detail in characters' eyes. Note that a higher amount of detail doesn't necessarily translate to better or more appealing artwork — simplified designs are sometimes a stylistic choice. Our method opens the option to have higher detail if so desired, without increasing production time.</p>
+		<p>Examples from a diverse set of anime series, including <a href="https://maidragon.jp/">Kobayashi's Dragon Maid</a>, <a href="https://mahoyome.jp/">The Ancient Magus Bride</a>, <a href="https://www.sunrise-inc.co.jp/idolmaster/">Idolmaster: Xenoglossia</a>, <a href="https://dr-stone.jp/">Dr. Stone</a>, <a href="https://juiz.jp/">Eden of the East</a>, <a href="https://darli-fra.jp/">Darling in the Franxx</a> and <a href="https://wotakoi-anime.com/">Wotakoi</a>:</p>
+		<!-- pairs: G+H, I+J, M+N, E+F -->
+		<div class="pairs-row-4">
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/G.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/results/H.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/I.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/results/J.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/M.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/results/N.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/E.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/results/F.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+		</div>
+		
+		<!-- pairs: O+P, K+L, C+D, A+B -->
+		<div class="pairs-row-4">
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/O.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/results/P.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/K.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/results/L.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/C.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/results/D.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+		<div class="pair"><figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/A.webp" alt="Original"><figcaption>Original</figcaption></figure><figure class="tagged-img red"><img src="https://jaliborc.github.io/re-draw/images/results/B.webp" alt="Redrawn"><figcaption>Redrawn</figcaption></figure></div>
+		</div>
+
+		<p>A side-effect of how our proposed networks are trained is that our method is also capable of applying entirely different designs to characters. While not the focus of our work, it demonstrates the generalizability of our method and the robustness of the learned models:</p>
+		<!-- Q: 1 original + 5 variants -->
+		<div class="sequence">
+		<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/Q.webp" alt="Original"><figcaption>Original</figcaption></figure>
+		<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/Q5.webp" alt="Variant 1"><figcaption>Variant 1</figcaption></figure>
+		<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/Q4.webp" alt="Variant 2"><figcaption>Variant 2</figcaption></figure>
+		<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/Q3.webp" alt="Variant 3"><figcaption>Variant 3</figcaption></figure>
+		<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/Q2.webp" alt="Variant 4"><figcaption>Variant 4</figcaption></figure>
+		<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/Q1.webp" alt="Variant 5"><figcaption>Variant 5</figcaption></figure>
+		</div>
+
+		<p>In these examples, we demonstrate robustness across challenging scenarios including atypical facial proportions, high-resolution imagery, oblique camera angles, head tilts, irregular lighting, and occlusions caused by hair:</p>
+		<div class="card-stacks-grid">
+			<div class="card-stack" onclick="openStack(0)">
+				<div class="inner">
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/H2.webp" alt=""></div>
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/H1.webp" alt=""></div>
+					<div class="front">
+						<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/G.webp" alt="Original"><figcaption>Original</figcaption></figure>
+					</div>
+				</div>
+				<span class="count">+7</span>
+				<p class="label">Dragon Maid</p>
+			</div>
+			<div class="card-stack" onclick="openStack(1)">
+				<div class="inner">
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/J2.webp" alt=""></div>
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/J1.webp" alt=""></div>
+					<div class="front">
+						<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/I.webp" alt="Original"><figcaption>Original</figcaption></figure>
+					</div>
+				</div>
+				<span class="count">+7</span>
+				<p class="label">Ancient Magus Bride</p>
+			</div>
+			<div class="card-stack" onclick="openStack(2)">
+				<div class="inner">
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/R2.webp" alt=""></div>
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/R1.webp" alt=""></div>
+					<div class="front">
+						<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/R.webp" alt="Original"><figcaption>Original</figcaption></figure>
+					</div>
+				</div>
+				<span class="count">+10</span>
+				<p class="label">Angels of Death</p>
+			</div>
+			<div class="card-stack" onclick="openStack(3)">
+				<div class="inner">
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/S2.webp" alt=""></div>
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/S1.webp" alt=""></div>
+					<div class="front">
+						<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/S.webp" alt="Original"><figcaption>Original</figcaption></figure>
+					</div>
+				</div>
+				<span class="count">+7</span>
+				<p class="label">Re:Zero</p>
+			</div>
+			<div class="card-stack" onclick="openStack(4)">
+				<div class="inner">
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/T2.webp" alt=""></div>
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/T1.webp" alt=""></div>
+					<div class="front">
+						<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/T.webp" alt="Original"><figcaption>Original</figcaption></figure>
+					</div>
+				</div>
+				<span class="count">+7</span>
+				<p class="label">Dr. Stone</p>
+			</div>
+			<div class="card-stack" onclick="openStack(5)">
+				<div class="inner">
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/F2.webp" alt=""></div>
+					<div class="ghost"><img src="https://jaliborc.github.io/re-draw/images/results/F1.webp" alt=""></div>
+					<div class="front">
+						<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/E.webp" alt="Original"><figcaption>Original</figcaption></figure>
+					</div>
+				</div>
+				<span class="count">+8</span>
+				<p class="label">Wotakoi</p>
+			</div>
+		</div>
+	</section>
+
+	<section>
+		<p class="label">Credits</p>
+		<h2>Acknowledgements</h2>
+		<aside class="ack">
+			<p>We would like to especially thank Jarret Martin for teaching us about the animation pipeline needs, his continuous feedback throughout the course of our research and help running the industry survey. We would also like to thank <a href="https://www.tonarianimation.com/">Tonari Animation</a> and <a href="https://otakuvs.com/">OtakuVS</a> for offering us the production data and other elements from their works Otachan and Second Self for illustration of the research, which we did whenever possible.</p>
+			<p>We'd also like to thank some of the first author's students for their contributions during the early stages of this project, in particular Yanic Thurner, Felix Kugler, and especially Dominik Hanko, who worked more closely with this topic.</p>
+			<p class="note">All copyrighted content belongs to its original owners. Characters, music, and all other forms of creative content are owned by their original creators, and we make no claim to them. This content was made in compliance with Fair Use law for the purpose of illustration of non-profit scientific research.</p>
+		</aside>
+	</section>
+
+</main>
+
+<footer>
+	Re:Draw · IJCAI 2024 · TU Wien &amp; CNR-ISTI
+</footer>
+
+<script>
+var bibtexFull = `@inproceedings{ijcai2024p842,
+  title     = {Re:Draw - Context Aware Translation as a Controllable Method for Artistic Production},
+  author    = {Cardoso, João Libório and Banterle, Francesco and Cignoni, Paolo and Wimmer, Michael},
+  booktitle = {Proceedings of the Thirty-Third International Joint Conference on
+               Artificial Intelligence, {IJCAI-24}},
+  publisher = {International Joint Conferences on Artificial Intelligence Organization},
+  editor    = {Kate Larson},
+  pages     = {7609--7617},
+  year      = {2024},
+  month     = {8},
+  note      = {AI, Arts & Creativity},
+  doi       = {10.24963/ijcai.2024/842},
+  url       = {https://doi.org/10.24963/ijcai.2024/842},
+}`
+
+function syncBibtexHeight() {
+	var paperLink = document.querySelector('.paper-link')
+	var bibtexBox = document.getElementById('bibtex-box')
+	if (paperLink && bibtexBox) {
+		var h = paperLink.offsetHeight;
+		if (h > 0) bibtexBox.style.height = h + 'px'
+	}
+}
+
+function copyBibtex() {
+	navigator.clipboard.writeText(bibtexFull).then(function() {
+		var box = document.getElementById('bibtex-box')
+		box.classList.add('copied');
+		setTimeout(function() { box.classList.remove('copied'); }, 1800)
+	})
+}
+
+function openStack(idx) {
+	var overlay = document.getElementById('stack-overlay')
+	overlay.querySelectorAll('.lightbox').forEach(function(lb) { lb.style.display = 'none' })
+	document.getElementById('lb-' + idx).style.display = 'block'
+	overlay.classList.add('visible')
+	document.body.style.overflow = 'hidden'
+}
+
+function closeStack(e) {
+	var lb = e.target.closest('.lightbox')
+	var isCloseBtn = e.target.closest('.lightbox button')
+	if (lb && !isCloseBtn)
+		return
+
+	document.getElementById('stack-overlay').classList.remove('visible')
+	document.body.style.overflow = ''
+}
+
+(function() {
+	var scroll = document.querySelector('aside.teaser .scroll')
+	var prev = document.querySelector('aside.teaser .prev')
+	var next = document.querySelector('aside.teaser .next')
+	function checkOverflow() {
+		var overflow = scroll.scrollWidth > scroll.clientWidth + 2
+		prev.classList.toggle('visible', overflow)
+		next.classList.toggle('visible', overflow)
+		scroll.classList.toggle('is-overflow', overflow)
+	}
+	checkOverflow()
+	
+	window.addEventListener('resize', checkOverflow)
+	window.addEventListener('load', syncBibtexHeight)
+	window.addEventListener('resize', syncBibtexHeight)
+})()
+</script>
+
+<div class="overlay" id="stack-overlay" onclick="closeStack(event)">
+		<div class="lightbox" id="lb-0" style="display:none">
+			<button onclick="closeStack(event)">&#x2715;</button>
+			<h3>Dragon Maid <span>/ Robustness Test</span></h3>
+			<div class="grid">
+				<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/G.webp" alt="Original"><figcaption>Original</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/H1.webp" alt="Variant 1"><figcaption>Variant 1</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/H2.webp" alt="Variant 2"><figcaption>Variant 2</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/H3.webp" alt="Variant 3"><figcaption>Variant 3</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/H4.webp" alt="Variant 4"><figcaption>Variant 4</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/H5.webp" alt="Variant 5"><figcaption>Variant 5</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/H6.webp" alt="Variant 6"><figcaption>Variant 6</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/H7.webp" alt="Variant 7"><figcaption>Variant 7</figcaption></figure>
+			</div>
+		</div>
+		<div class="lightbox" id="lb-1" style="display:none">
+			<button onclick="closeStack(event)">&#x2715;</button>
+			<h3>Ancient Magus Bride <span>/ Robustness Test</span></h3>
+			<div class="grid">
+				<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/I.webp" alt="Original"><figcaption>Original</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/J1.webp" alt="Variant 1"><figcaption>Variant 1</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/J2.webp" alt="Variant 2"><figcaption>Variant 2</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/J3.webp" alt="Variant 3"><figcaption>Variant 3</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/J4.webp" alt="Variant 4"><figcaption>Variant 4</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/J5.webp" alt="Variant 5"><figcaption>Variant 5</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/J6.webp" alt="Variant 6"><figcaption>Variant 6</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/J7.webp" alt="Variant 7"><figcaption>Variant 7</figcaption></figure>
+			</div>
+		</div>
+		<div class="lightbox" id="lb-2" style="display:none">
+			<button onclick="closeStack(event)">&#x2715;</button>
+			<h3>Angels of Death <span>/ Robustness Test</span></h3>
+			<div class="grid">
+				<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/R.webp" alt="Original"><figcaption>Original</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/R1.webp" alt="Variant 1"><figcaption>Variant 1</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/R2.webp" alt="Variant 2"><figcaption>Variant 2</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/R4.webp" alt="Variant 3"><figcaption>Variant 3</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/R5.webp" alt="Variant 4"><figcaption>Variant 4</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/R6.webp" alt="Variant 5"><figcaption>Variant 5</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/R7.webp" alt="Variant 6"><figcaption>Variant 6</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/R8.webp" alt="Variant 7"><figcaption>Variant 7</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/R9.webp" alt="Variant 8"><figcaption>Variant 8</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/R10.webp" alt="Variant 9"><figcaption>Variant 9</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/R3.webp" alt="Variant 10"><figcaption>Variant 10</figcaption></figure>
+			</div>
+		</div>
+		<div class="lightbox" id="lb-3" style="display:none">
+			<button onclick="closeStack(event)">&#x2715;</button>
+			<h3>Re:Zero <span>/ Robustness Test</span></h3>
+			<div class="grid">
+				<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/S.webp" alt="Original"><figcaption>Original</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/S1.webp" alt="Variant 1"><figcaption>Variant 1</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/S2.webp" alt="Variant 2"><figcaption>Variant 2</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/S3.webp" alt="Variant 3"><figcaption>Variant 3</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/S4.webp" alt="Variant 4"><figcaption>Variant 4</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/S5.webp" alt="Variant 5"><figcaption>Variant 5</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/S6.webp" alt="Variant 6"><figcaption>Variant 6</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/S7.webp" alt="Variant 7"><figcaption>Variant 7</figcaption></figure>
+			</div>
+		</div>
+		<div class="lightbox" id="lb-4" style="display:none">
+			<button onclick="closeStack(event)">&#x2715;</button>
+			<h3>Dr. Stone <span>/ Robustness Test</span></h3>
+			<div class="grid">
+				<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/T.webp" alt="Original"><figcaption>Original</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/T1.webp" alt="Variant 1"><figcaption>Variant 1</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/T2.webp" alt="Variant 2"><figcaption>Variant 2</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/T3.webp" alt="Variant 3"><figcaption>Variant 3</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/T4.webp" alt="Variant 4"><figcaption>Variant 4</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/T5.webp" alt="Variant 5"><figcaption>Variant 5</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/T6.webp" alt="Variant 6"><figcaption>Variant 6</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/T7.webp" alt="Variant 7"><figcaption>Variant 7</figcaption></figure>
+			</div>
+		</div>
+		<div class="lightbox" id="lb-5" style="display:none">
+			<button onclick="closeStack(event)">&#x2715;</button>
+			<h3>Wotakoi <span>/ Robustness Test</span></h3>
+			<div class="grid">
+				<figure class="tagged-img dark"><img src="https://jaliborc.github.io/re-draw/images/results/E.webp" alt="Original"><figcaption>Original</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/F1.webp" alt="Variant 1"><figcaption>Variant 1</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/F2.webp" alt="Variant 2"><figcaption>Variant 2</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/F3.webp" alt="Variant 3"><figcaption>Variant 3</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/F4.webp" alt="Variant 4"><figcaption>Variant 4</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/F5.webp" alt="Variant 5"><figcaption>Variant 5</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/F6.webp" alt="Variant 6"><figcaption>Variant 6</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/F7.webp" alt="Variant 7"><figcaption>Variant 7</figcaption></figure>
+				<figure class="tagged-img faded"><img src="https://jaliborc.github.io/re-draw/images/results/F8.webp" alt="Variant 8"><figcaption>Variant 8</figcaption></figure>
+			</div>
+		</div>
+</div>
+</body>
 </html>

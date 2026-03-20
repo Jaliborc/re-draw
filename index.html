@@ -376,6 +376,25 @@
 		}
 
 		/* ── VIDEO ── */
+		.video-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 20px;
+
+			.video-title {
+				font-size: 12px;
+				font-weight: 700;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+				color: var(--mid);
+				margin-bottom: 8px;
+			}
+		}
+
+		@media (max-width: 750px) {
+			.video-grid { grid-template-columns: 1fr; }
+		}
+
 		.video-wrap {
 			position: relative;
 			width: 100%;
@@ -804,17 +823,20 @@
 
 	<section>
 		<p class="label">Media</p>
-		<h2>Explainer Video</h2>
-		<div class="video-wrap">
-			<iframe src="https://www.youtube.com/embed/?listType=search&list=Re:Draw+context+aware+translation+IJCAI" allowfullscreen title="Explainer video"></iframe>
-		</div>
-	</section>
-
-	<section>
-		<p class="label">Media</p>
-		<h2>Stress Test</h2>
-		<div class="video-wrap">
-			<iframe src="https://www.youtube.com/embed/?listType=search&list=Re:Draw+stress+test+IJCAI" allowfullscreen title="Stress test video"></iframe>
+		<h2>Videos</h2>
+		<div class="video-grid">
+			<div>
+				<p class="video-title">Explainer</p>
+				<div class="video-wrap">
+					<iframe src="https://www.youtube.com/embed/?listType=search&list=Re:Draw+context+aware+translation+IJCAI" allowfullscreen title="Explainer video"></iframe>
+				</div>
+			</div>
+			<div>
+				<p class="video-title">Robustness Test</p>
+				<div class="video-wrap">
+					<iframe src="https://www.youtube.com/embed/?listType=search&list=Re:Draw+stress+test+IJCAI" allowfullscreen title="Stress test video"></iframe>
+				</div>
+			</div>
 		</div>
 	</section>
 

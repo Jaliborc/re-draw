@@ -713,6 +713,13 @@
 			}
 		}
 
+		@media (max-width: 550px) {
+			.sequence {
+				grid-template-columns: 1fr 1fr 1fr 1fr;
+				> *:nth-last-child(-n+2) { display: none; }
+			}
+		}
+
 		@media (max-width: 600px) {
 			.pairs-row .pair { flex: 1 1 100%; }
 			.paper-bibtex { display: flex; flex-direction: column; align-items: center; }
@@ -829,13 +836,13 @@
 			<div>
 				<p class="video-title">Explainer</p>
 				<div class="video-wrap">
-					<iframe src="https://www.youtube.com/embed/?listType=search&list=Re:Draw+context+aware+translation+IJCAI" allowfullscreen title="Explainer video"></iframe>
+					<iframe src="https://www.youtube.com/embed/8YeDvrdvA5A" title="Explainer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 				</div>
 			</div>
 			<div>
 				<p class="video-title">Robustness Test</p>
 				<div class="video-wrap">
-					<iframe src="https://www.youtube.com/embed/?listType=search&list=Re:Draw+stress+test+IJCAI" allowfullscreen title="Stress test video"></iframe>
+					<iframe src="https://www.youtube.com/embed/YO8Fb2cpSRQ" title="Stress Test" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 				</div>
 			</div>
 		</div>
@@ -957,7 +964,7 @@
 </main>
 
 <footer>
-	João Libório Cardoso · TU Wien &amp; CNR-ISTI · IJCAI 2024
+	João Libório Cardoso · TU Wien &amp; CNR-ISTI · IJCAI
 </footer>
 
 <script>
